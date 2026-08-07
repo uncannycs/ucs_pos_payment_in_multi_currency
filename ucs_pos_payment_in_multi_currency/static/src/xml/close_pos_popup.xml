@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+    <t t-name="ucs_pos_payment_in_multi_currency.ClosePosPopup" t-inherit="point_of_sale.ClosePosPopup" t-inherit-mode="extension">
+        <xpath expr="//div[hasclass('payment-methods-overview')]" position="after">
+            <div t-if="props.foreign_currency_totals and props.foreign_currency_totals.length" class="w-100 mb-3 mt-3">
+                <div class="d-flex align-items-center justify-content-between text-muted border-bottom pb-1 mb-1">
+                    <span>Currency</span>
+                    <span>Total</span>
+                </div>
+                <t t-foreach="props.foreign_currency_totals" t-as="fc" t-key="fc.name">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <span t-esc="fc.name" class="text-muted"/>
+                        <span class="text-muted">
+                            <t t-esc="fc.symbol"/><t t-esc="fc.amount.toFixed(2)" />
+                        </span>
+                    </div>
+                </t>
+            </div>
+        </xpath>
+    </t>
+</templates>
