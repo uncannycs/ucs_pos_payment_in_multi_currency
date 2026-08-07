@@ -1,0 +1,1 @@
+# ucs_pos_payment_in_multi_currency
