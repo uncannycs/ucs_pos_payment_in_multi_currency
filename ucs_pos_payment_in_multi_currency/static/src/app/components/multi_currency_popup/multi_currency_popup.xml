@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+    <t t-name="ucs_pos_payment_in_multi_currency.MultiCurrencyPopup">
+        <div class="popup popup-text">
+            <header class="title drag-handle">
+                <t t-esc="props.title || 'Multi Currency'"/>
+            </header>
+            <main class="body">
+                <div class="d-flex flex-column align-items-center mb-3 p-4">
+                    <div class="d-flex align-items-center w-100 mb-4">
+                        <span class="fw-bold me-3" style="min-width: 150px; text-align: right;">Select Currency:</span>
+                        <select class="form-select w-50" t-on-change="onCurrencyChange">
+                            <option t-att-value="props.baseCurrency.id"><t t-esc="props.baseCurrency.name"/></option>
+                            <t t-foreach="props.currencies" t-as="currency" t-key="currency.id">
+                                <option t-if="currency.id !== props.baseCurrency.id" t-att-value="currency.id" t-att-selected="currency.id == state.selectedCurrencyId">
+                                    <t t-esc="currency.name"/>
+                                </option>
+                            </t>
+                        </select>
+                    </div>
+                    <div class="d-flex w-100 mb-3">
+                        <span class="fw-bold me-3" style="min-width: 150px; text-align: right;">Current Rate:</span>
+                        <span><t t-esc="conversionRate"/></span>
+                    </div>
+                    <div class="d-flex w-100 mb-3">
+                        <span class="me-3" style="min-width: 150px; text-align: right;"></span>
+                        <span>1 = <t t-esc="conversionRate"/> <t t-esc="selectedCurrency.name"/></span>
+                    </div>
+                </div>
+            </main>
+            <footer class="footer centered modal-footer">
+                <div class="button confirm highlight btn btn-lg btn-primary" t-on-click="confirm">
+                    Add
+                </div>
+                <div class="button cancel btn btn-lg btn-secondary" t-on-click="cancel">
+                    Cancel
+                </div>
+            </footer>
+        </div>
+    </t>
+</templates>

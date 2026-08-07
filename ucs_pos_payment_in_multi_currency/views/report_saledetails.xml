@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="pos_session_sales_details_multi_currency" inherit_id="point_of_sale.report_saledetails">
+        <xpath expr="//t[@id='payments']" position="before">
+            <div t-if="foreign_currency_totals" id="foreign_currencies" style="page-break-inside: avoid;" class="mt-4 mb-4">
+                <div class="oe_structure"></div>
+                <h6 class="bg-secondary p-1 fw-bold">Total Price With Currency</h6>
+                <table class="table table-sm table-borderless">
+                    <thead>
+                        <tr class="border-bottom border-secondary">
+                            <th class="ps-2 fw-bold text-start">Currency</th>
+                            <th class="fw-bold text-end">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr t-foreach='foreign_currency_totals' t-as='fc' class="border-bottom border-secondary">
+                            <td class="ps-2"><span t-out="fc['name']">Currency Name</span></td>
+                            <td class="text-end">
+                                <span t-out="fc['symbol']"/><span t-out="fc['amount']" t-options="{'widget': 'float', 'precision': 2}">0.00</span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </xpath>
+    </template>
+</odoo>

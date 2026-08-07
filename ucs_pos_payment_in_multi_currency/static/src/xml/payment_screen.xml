@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+
+
+    <!-- Payment Buttons Override -->
+    <t t-name="ucs_pos_payment_in_multi_currency.PaymentScreenButtons" t-inherit="point_of_sale.PaymentScreenButtons" t-inherit-mode="extension">
+        <xpath expr="//div[hasclass('payment-buttons')]" position="inside">
+            <button class="button btn btn-primary lh-lg" 
+                    t-on-click="onClickMultiCurrency">
+                <i class="fa fa-money me-2"></i>Multi Currency
+            </button>
+        </xpath>
+    </t>
+
+    <!-- Payment Line Display Override -->
+    <t t-name="ucs_pos_payment_in_multi_currency.PaymentScreenPaymentLines" t-inherit="point_of_sale.PaymentScreenPaymentLines" t-inherit-mode="extension">
+
+        <xpath expr="//t[@t-esc='line.payment_method.name']" position="replace">
+            <t t-esc="line.payment_method.name"/>
+            <t t-if="line.foreign_currency_id"> ( <t t-esc="line.foreign_currency_id.name"/> ( <t t-esc="line.foreign_currency_id.symbol"/> ) )</t>
+        </xpath>
+        <xpath expr="//t[@t-if='line.selected']//div[hasclass('payment-amount')]" position="replace">
+            <div class="payment-amount px-3">
+                <t t-if="line.foreign_currency_id">
+                    <t t-esc="line.foreign_currency_id.symbol"/> <t t-esc="line.foreign_amount.toFixed(4)"/>
+                    <div class="text-muted" style="font-size: 0.7em;">
+                        ( <t t-esc="env.utils.formatCurrency(line.get_amount())" /> Base )
+                    </div>
+                </t>
+                <t t-else="">
+                    <t t-if="line and line.payment_status and ['done', 'waitingCard', 'waiting', 'reversing', 'reversed'].includes(line.payment_status)">
+                            <t t-esc="env.utils.formatCurrency(line.get_amount(), false)" />
+                    </t>
+                    <t t-else="">
+                            <t t-esc="formatLineAmount(line)" />
+                    </t>
+                </t>
+            </div>
+        </xpath>
+        <xpath expr="//t[@t-else='']//div[hasclass('paymentline') and hasclass('bg-view')]//div[hasclass('payment-amount')]" position="replace">
+            <div class="payment-amount px-3">
+                <t t-if="line.foreign_currency_id">
+                    <t t-esc="line.foreign_currency_id.symbol"/> <t t-esc="line.foreign_amount.toFixed(4)"/>
+                    <div class="text-muted" style="font-size: 0.7em;">
+                        ( <t t-esc="env.utils.formatCurrency(line.get_amount())" /> Base )
+                    </div>
+                </t>
+                <t t-else="">
+                    <t t-if="line and line.payment_status and ['done', 'waitingCard', 'waiting', 'reversing', 'reversed'].includes(line.payment_status)">
+                            <t t-esc="env.utils.formatCurrency(line.get_amount(), false)" />
+                    </t>
+                    <t t-else="">
+                            <t t-esc="formatLineAmount(line)" />
+                    </t>
+                </t>
+            </div>
+        </xpath>
+    </t>
+
+    <!-- Payment Status Box Override -->
+    <t t-name="ucs_pos_payment_in_multi_currency.PaymentScreenStatus" t-inherit="point_of_sale.PaymentScreenStatus" t-inherit-mode="extension">
+        <xpath expr="//div[hasclass('payment-status-container')]" position="after">
+            <t t-set="selectedLine" t-value="props.order.selected_paymentline"/>
+            <t t-if="selectedLine and selectedLine.foreign_currency_id">
+                <t t-set="conversionRate" t-value="selectedLine.get_amount() ? selectedLine.foreign_amount / selectedLine.get_amount() : 1"/>
+                <div class="mt-2 text-success p-2 rounded" style="background-color: #d1e7dd; border: 1px solid #0f5132; font-size: 0.9em; color: #0f5132 !important;">
+                    <div class="fw-bold mb-1">Currency conversion</div>
+                    <div class="d-flex flex-column w-100">
+                        <div class="d-flex justify-content-between">
+                            <span>Total Due</span>
+                            <span><t t-esc="selectedLine.foreign_currency_id.symbol"/> <t t-esc="(props.order.get_total_with_tax() * conversionRate).toFixed(4)"/></span>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <span>Remaining</span>
+                            <span><t t-esc="selectedLine.foreign_currency_id.symbol"/> <t t-esc="(props.order.get_due() > 0 ? (props.order.get_due() * conversionRate) : 0).toFixed(4)"/></span>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <span>Change</span>
+                            <span><t t-esc="selectedLine.foreign_currency_id.symbol"/> <t t-esc="(props.order.get_change() > 0 ? (props.order.get_change() * conversionRate) : 0).toFixed(4)"/></span>
+                        </div>
+                    </div>
+                </div>
+            </t>
+        </xpath>
+    </t>
+
+    <!-- Receipt Payment Lines Override -->
+    <t t-name="ucs_pos_payment_in_multi_currency.OrderReceipt" t-inherit="point_of_sale.OrderReceipt" t-inherit-mode="extension">
+        <xpath expr="//div[hasclass('paymentlines')]" position="replace">
+            <div class="paymentlines text-start pt-1" t-foreach="props.data.paymentlines" t-as="line" t-key="line_index">
+                <t t-if="line.foreign_currency_id">
+                    <t t-esc="line.name" />
+                    ( <t t-esc="line.foreign_currency_id.name"/> ( <t t-esc="line.foreign_currency_id.symbol"/> ) )
+                    <span class="pos-receipt-right-align font-monospace">
+                        <t t-esc="line.foreign_currency_id.symbol"/> <t t-esc="line.foreign_amount.toFixed(4)"/>
+                    </span>
+                </t>
+                <t t-else="">
+                    <t t-esc="line.name" />
+                    <span t-out="props.formatCurrency(line.amount)" class="pos-receipt-right-align font-monospace"/>
+                </t>
+            </div>
+        </xpath>
+    </t>
+</templates>
