@@ -11,6 +11,7 @@
         'views/pos_config_views.xml',
         'views/report_saledetails.xml',
     ],
+    'license': 'Other proprietary',
     'assets': {
         'point_of_sale._assets_pos': [
             'ucs_pos_payment_in_multi_currency/static/src/app/components/multi_currency_popup/multi_currency_popup.js',
@@ -21,7 +22,6 @@
         ],
     },
     "images": ["static/description/banner.gif"],
-    'license': 'LGPL-3',
     'installable': True,
     'application': True,
     'auto_install': False
